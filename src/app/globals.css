@@ -14,6 +14,9 @@ body {
 }
 body{
     overflow: hidden;
+    background: url("https://img.goodfon.com/wallpaper/nbig/f/e4/zvezda-smerti-2-death-star-ii-star-wars-boevaia-kosmicheskai.webp");
+    background-size: cover;
+    /* https://i.pinimg.com/736x/4a/a9/9b/4aa99b6ad2d2cbc7cb04a41571885a8f.jpg */
 }
 .section{
     position: absolute;
@@ -25,6 +28,7 @@ body{
     /* background: url("https://i.postimg.cc/c1Q3njM0/bg2.jpg"); */
 /*   background-color:black; */
     background-size: cover;
+    z-index:-1;
     animation: animateBg 50s linear infinite;
 }
 

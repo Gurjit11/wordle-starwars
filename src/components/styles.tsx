@@ -5,30 +5,6 @@ import React from 'react';
 const styles = () => {
   return (
     <style jsx>{`
-      .keyboard-key {
-        width: 3rem;
-        height: 4rem;
-        margin: 0.25rem;
-        border-radius: 0.375rem;
-        font-weight: bold;
-        font-size: 1.125rem;
-        text-transform: uppercase;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        user-select: none;
-        border: none;
-        outline: none;
-      }
-
-      .enter-key {
-        width: 5rem;
-      }
-
-      .backspace-key {
-        width: 5rem;
-      }
 
       .level-complete-overlay {
         position: absolute;

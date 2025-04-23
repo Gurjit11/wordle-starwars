@@ -24,7 +24,7 @@ export const Keyboard = ({ handleLetter, handleDelete, handleGuess, usedLetters,
         {row1.map(letter => (
           <button
             key={letter}
-            className={`keyboard-key ${getKeyStyle(letter)}`}
+            className={`p-1 m-1 w-7 rounded-md ${getKeyStyle(letter)}`}
             onClick={() => handleLetter(letter)}
             disabled={disabled}
           >
@@ -36,7 +36,7 @@ export const Keyboard = ({ handleLetter, handleDelete, handleGuess, usedLetters,
         {row2.map(letter => (
           <button
             key={letter}
-            className={`keyboard-key ${getKeyStyle(letter)}`}
+            className={`p-1 m-1 w-7 rounded-md ${getKeyStyle(letter)}`}
             onClick={() => handleLetter(letter)}
             disabled={disabled}
           >
@@ -50,7 +50,7 @@ export const Keyboard = ({ handleLetter, handleDelete, handleGuess, usedLetters,
             return (
               <button
                 key={button}
-                className="keyboard-key enter-key bg-green-500 text-white"
+                className="keyboard-key enter-key bg-green-500 p-1 m-1 rounded-md text-white"
                 onClick={handleGuess}
                 disabled={disabled}
               >
@@ -61,7 +61,7 @@ export const Keyboard = ({ handleLetter, handleDelete, handleGuess, usedLetters,
             return (
               <button
                 key={button}
-                className="keyboard-key backspace-key bg-gray-400 text-white"
+                className="keyboard-key backspace-key p-1 m-1 rounded-md bg-gray-400 text-white"
                 onClick={handleDelete}
                 disabled={disabled}
               >
@@ -72,7 +72,7 @@ export const Keyboard = ({ handleLetter, handleDelete, handleGuess, usedLetters,
             return (
               <button
                 key={button}
-                className={`keyboard-key ${getKeyStyle(button)}`}
+                className={`p-1 m-1 w-7 rounded-md ${getKeyStyle(button)}`}
                 onClick={() => handleLetter(button)}
                 disabled={disabled}
               >

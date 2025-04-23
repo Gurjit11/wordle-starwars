@@ -21,13 +21,13 @@ const Home = () => {
   };
 
   return (
-    <div className="flex z-10 flex-col items-center justify-center min-h-screen py-2 bg-star-wars-black text-star-wars-yellow">
+    <div className="flex z-10 flex-col items-center justify-center min-h-screen py-2 bg- text-star-wars-yellow">
       {!gameStarted ? (
         <div className="fade-in">
           <h1 className="text-4xl font-bold mb-4 star-wars-text">Star Wordle</h1>
           <div className="mb-4">
             <Select onValueChange={handleLevelChange}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select Level"/>
               </SelectTrigger>
               <SelectContent>
@@ -37,7 +37,7 @@ const Home = () => {
               </SelectContent>
             </Select>
           </div>
-          <Button onClick={handleStartGame} className="bg-star-wars-yellow text-star-wars-black">
+          <Button onClick={handleStartGame} className="bg-star-wars-yellow hover:bg-star-wars-light-blue w-full text-star-wars-black">
             Start Game
           </Button>
         </div>

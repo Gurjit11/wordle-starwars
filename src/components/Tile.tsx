@@ -17,7 +17,7 @@ export const Tile = ({ letter, state }: TileProps) => {
   const style = colorMap[state];
 
   return (
-    <div className={`w-12 h-12 border-2 text-2xl font-bold flex items-center justify-center uppercase ${style}`}>
+    <div className={`w-12 h-12 rounded-md border-2 text-2xl font-bold flex items-center justify-center uppercase ${style}`}>
       {letter}
     </div>
   );
