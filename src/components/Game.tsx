@@ -8,6 +8,8 @@ import { GameOver } from './GameOver';
 import { WORDS } from '@/lib/words';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import { useDisclosure } from '@radix-ui/react-accordion';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 const MAX_GUESSES = 6;
 
@@ -26,6 +28,20 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
   const [usedLetters, setUsedLetters] = useState<{[key: string]: string}>({});
   const targetWord = WORDS[level];
   const { toast } = useToast();
+  const [hint, setHint] = useState<string | null>(null);
+  const [hintUsed, setHintUsed] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    // Generate a hint for the current level
+    const generateHint = () => {
+      // Simple hint: the first letter of the word
+      setHint(WORDS[level].charAt(0));
+    };
+
+    generateHint();
+    setHintUsed(false);
+  }, [level]);
 
   const handleLetter = useCallback((letter: string) => {
     if (currentGuess.length < targetWord.length) {
@@ -132,6 +148,7 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
     setIsGameOver(false);
     setRevealedWord('');
     setUsedLetters({});
+    setHintUsed(false);
   };
 
   const handleRestartGame = () => {
@@ -143,6 +160,7 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
     setIsLevelComplete(false);
     setRevealedWord('');
     setUsedLetters({});
+    setHintUsed(false);
   };
 
   const shareResults = () => {
@@ -156,10 +174,50 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
       .catch((error) => console.error('Error sharing:', error));
   };
 
+  const handleUseHint = () => {
+    setHintUsed(true);
+    setOpen(false);
+  };
+
   return (
     <div className="flex flex-col items-center">
       <p className="mb-2">Level: {level + 1}</p>
       <Grid guesses={guesses} currentGuess={currentGuess} targetWord={targetWord} />
+      <div className="flex gap-4 mb-4">
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" disabled={hintUsed}>
+              Hint
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Are you sure?</DialogTitle>
+              <DialogDescription>
+                Using a hint will make the game easier. Are you sure you want to use a hint?
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="flex items-center justify-center">
+                {!hintUsed && hint ? `The first letter is: ${hint}` : "No hint available."}
+              </div>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="secondary" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" onClick={handleUseHint}>
+                Use Hint
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+        {navigator.share && (
+          <Button onClick={shareResults}>
+            Share Results
+          </Button>
+        )}
+      </div>
       <Keyboard
         handleLetter={handleLetter}
         handleDelete={handleDelete}
