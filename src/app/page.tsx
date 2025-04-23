@@ -1,16 +1,50 @@
-
 'use client';
 
-import React from 'react';
-import { Game } from '@/components/Game';
-import { Toaster } from '@/components/ui/toaster';
+import React, {useState} from 'react';
+import {Game} from '@/components/Game';
+import {Toaster} from '@/components/ui/toaster';
+import {Button} from '@/components/ui/button';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
+import {useRouter} from 'next/navigation';
 
 const Home = () => {
+  const [selectedLevel, setSelectedLevel] = useState<number>(0);
+  const [gameStarted, setGameStarted] = useState(false);
+  const router = useRouter();
+
+  const handleStartGame = () => {
+    setGameStarted(true);
+  };
+
+  const handleLevelChange = (level: string) => {
+    setSelectedLevel(parseInt(level));
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-star-wars-black text-star-wars-yellow">
-      <h1 className="text-4xl font-bold mb-4">Star Wordle</h1>
-      <Game />
-      <Toaster />
+      {!gameStarted ? (
+        <div className="fade-in">
+          <h1 className="text-4xl font-bold mb-4 star-wars-text">Star Wordle</h1>
+          <div className="mb-4">
+            <Select onValueChange={handleLevelChange}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select Level"/>
+              </SelectTrigger>
+              <SelectContent>
+                {Array.from({length: 10}, (_, i) => (
+                  <SelectItem key={i} value={i.toString()}>Level {i + 1}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button onClick={handleStartGame} className="bg-star-wars-yellow text-star-wars-black">
+            Start Game
+          </Button>
+        </div>
+      ) : (
+        <Game initialLevel={selectedLevel}/>
+      )}
+      <Toaster/>
     </div>
   );
 };

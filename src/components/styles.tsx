@@ -63,9 +63,25 @@ const styles = () => {
         text-align: center;
         z-index: 10;
       }
+      .fade-in {
+        animation: fadeIn 2s;
+      }
+
+      @keyframes fadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+      }
+
+      .star-wars-text {
+        font-family: 'Arial Black', sans-serif;
+        text-transform: uppercase;
+        font-size: 3rem;
+        letter-spacing: 0.2rem;
+        color: #ffe81f;
+        text-shadow: 0 0 5px #c1b300, 0 0 10px #c1b300, 0 0 20px #c1b300;
+      }
     `}</style>
   );
 };
 
 export default styles;
-

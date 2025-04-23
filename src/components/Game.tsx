@@ -11,8 +11,12 @@ import { Button } from '@/components/ui/button';
 
 const MAX_GUESSES = 6;
 
-export const Game = () => {
-  const [level, setLevel] = useState(0);
+interface GameProps {
+  initialLevel?: number;
+}
+
+export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
+  const [level, setLevel] = useState(initialLevel);
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState('');
   const [isLevelComplete, setIsLevelComplete] = useState(false);
