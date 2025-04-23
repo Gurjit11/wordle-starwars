@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -23,42 +22,6 @@ export const Game = () => {
   const [usedLetters, setUsedLetters] = useState<{[key: string]: string}>({});
   const targetWord = WORDS[level];
   const { toast } = useToast();
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (isLevelComplete || isGameOver) return;
-
-      const letter = event.key.toUpperCase();
-      if (letter === 'ENTER') {
-        handleGuess();
-      } else if (letter === 'BACKSPACE') {
-        handleDelete();
-      } else if (/^[A-Z]$/.test(letter)) {
-        handleLetter(letter);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentGuess, isLevelComplete, isGameOver, handleGuess, handleDelete, handleLetter]);
-
-  useEffect(() => {
-    if (isLevelComplete) {
-      const timer = setTimeout(() => {
-        if (level < WORDS.length - 1) {
-          setLevel(prevLevel => prevLevel + 1);
-          setGuesses([]);
-          setCurrentGuess('');
-          setIsLevelComplete(false);
-          setUsedLetters({});
-        } else {
-          setIsGameWon(true);
-          setIsGameOver(true);
-        }
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isLevelComplete, level]);
 
   const handleLetter = useCallback((letter: string) => {
     if (currentGuess.length < targetWord.length) {
@@ -120,6 +83,44 @@ export const Game = () => {
 
     setCurrentGuess('');
   }, [currentGuess, guesses, targetWord, guesses.length, usedLetters, toast]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (isLevelComplete || isGameOver) return;
+
+      const letter = event.key.toUpperCase();
+      if (letter === 'ENTER') {
+        handleGuess();
+      } else if (letter === 'BACKSPACE') {
+        handleDelete();
+      } else if (/^[A-Z]$/.test(letter)) {
+        handleLetter(letter);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentGuess, isLevelComplete, isGameOver, handleGuess, handleDelete, handleLetter]);
+
+  useEffect(() => {
+    if (isLevelComplete) {
+      const timer = setTimeout(() => {
+        if (level < WORDS.length - 1) {
+          setLevel(prevLevel => prevLevel + 1);
+          setGuesses([]);
+          setCurrentGuess('');
+          setIsLevelComplete(false);
+          setUsedLetters({});
+        } else {
+          setIsGameWon(true);
+          setIsGameOver(true);
+        }
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isLevelComplete, level]);
+
+  
 
   const handleRetryLevel = () => {
     setGuesses([]);
