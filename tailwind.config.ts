@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -59,7 +60,10 @@ export default {
   				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
-  			}
+  			},
+        'star-wars-black': 'hsl(var(--star-wars-black))',
+        'star-wars-yellow': 'hsl(var(--star-wars-yellow))',
+        'star-wars-light-blue': 'hsl(var(--star-wars-light-blue))',
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
@@ -82,11 +86,17 @@ export default {
   				to: {
   					height: '0'
   				}
-  			}
+  			},
+        'tile-flip': {
+          '0%': { transform: 'rotateX(0deg)' },
+          '50%': { transform: 'rotateX(90deg)' },
+          '100%': { transform: 'rotateX(0deg)' },
+        },
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+        'tile-flip': 'tile-flip 0.5s ease-in-out',
   		}
   	}
   },

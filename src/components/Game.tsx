@@ -1,0 +1,181 @@
+
+'use client';
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { Grid } from './Grid';
+import { Keyboard } from './Keyboard';
+import { LevelComplete } from './LevelComplete';
+import { GameOver } from './GameOver';
+import { WORDS } from '@/lib/words';
+import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+
+const MAX_GUESSES = 6;
+
+export const Game = () => {
+  const [level, setLevel] = useState(0);
+  const [guesses, setGuesses] = useState<string[]>([]);
+  const [currentGuess, setCurrentGuess] = useState('');
+  const [isLevelComplete, setIsLevelComplete] = useState(false);
+  const [isGameOver, setIsGameOver] = useState(false);
+  const [isGameWon, setIsGameWon] = useState(false);
+  const [revealedWord, setRevealedWord] = useState('');
+  const [usedLetters, setUsedLetters] = useState<{[key: string]: string}>({});
+  const targetWord = WORDS[level];
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (isLevelComplete || isGameOver) return;
+
+      const letter = event.key.toUpperCase();
+      if (letter === 'ENTER') {
+        handleGuess();
+      } else if (letter === 'BACKSPACE') {
+        handleDelete();
+      } else if (/^[A-Z]$/.test(letter)) {
+        handleLetter(letter);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentGuess, isLevelComplete, isGameOver, handleGuess, handleDelete, handleLetter]);
+
+  useEffect(() => {
+    if (isLevelComplete) {
+      const timer = setTimeout(() => {
+        if (level < WORDS.length - 1) {
+          setLevel(prevLevel => prevLevel + 1);
+          setGuesses([]);
+          setCurrentGuess('');
+          setIsLevelComplete(false);
+          setUsedLetters({});
+        } else {
+          setIsGameWon(true);
+          setIsGameOver(true);
+        }
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isLevelComplete, level]);
+
+  const handleLetter = useCallback((letter: string) => {
+    if (currentGuess.length < targetWord.length) {
+      setCurrentGuess(prevGuess => prevGuess + letter);
+    }
+  }, [currentGuess, targetWord]);
+
+  const handleDelete = useCallback(() => {
+    setCurrentGuess(prevGuess => prevGuess.slice(0, -1));
+  }, []);
+
+  const handleGuess = useCallback(() => {
+    if (currentGuess.length !== targetWord.length) {
+       toast({
+        title: "Not enough letters",
+        description: "Your guess must be " + targetWord.length + " letters long.",
+      });
+      return;
+    }
+
+    if (guesses.includes(currentGuess)) {
+        toast({
+          title: "Already guessed",
+          description: "You already guessed that word.",
+        });
+        return;
+      }
+
+    setGuesses(prevGuesses => [...prevGuesses, currentGuess]);
+
+    let newUsedLetters = {...usedLetters};
+    for (let i = 0; i < targetWord.length; i++) {
+        const letter = currentGuess[i];
+        if (targetWord[i] === letter) {
+            newUsedLetters[letter] = "green";
+        } else if (
+            targetWord.includes(letter) &&
+            newUsedLetters[letter] !== "green"
+        ) {
+            newUsedLetters[letter] = "yellow";
+        } else if (!newUsedLetters[letter]) {
+            newUsedLetters[letter] = "gray";
+        }
+    }
+
+    setUsedLetters(newUsedLetters);
+    
+
+    if (currentGuess === targetWord) {
+      setIsLevelComplete(true);
+      toast({
+        title: "Level Complete!",
+        description: "Advancing to the next level...",
+      });
+    } else if (guesses.length + 1 >= MAX_GUESSES) {
+      setIsGameOver(true);
+      setRevealedWord(targetWord);
+    }
+
+    setCurrentGuess('');
+  }, [currentGuess, guesses, targetWord, guesses.length, usedLetters, toast]);
+
+  const handleRetryLevel = () => {
+    setGuesses([]);
+    setCurrentGuess('');
+    setIsGameOver(false);
+    setRevealedWord('');
+    setUsedLetters({});
+  };
+
+  const handleRestartGame = () => {
+    setLevel(0);
+    setGuesses([]);
+    setCurrentGuess('');
+    setIsGameOver(false);
+    setIsGameWon(false);
+    setIsLevelComplete(false);
+    setRevealedWord('');
+    setUsedLetters({});
+  };
+
+  const shareResults = () => {
+    const resultsText = `I beat Level ${level + 1} of Star Wordle in ${guesses.length} tries!\n`;
+    const shareData = {
+      text: resultsText,
+    };
+  
+    navigator.share(shareData)
+      .then(() => console.log('Shared successfully'))
+      .catch((error) => console.error('Error sharing:', error));
+  };
+
+  return (
+    <div className="flex flex-col items-center">
+      <p className="mb-2">Level: {level + 1}</p>
+      <Grid guesses={guesses} currentGuess={currentGuess} targetWord={targetWord} />
+      <Keyboard
+        handleLetter={handleLetter}
+        handleDelete={handleDelete}
+        handleGuess={handleGuess}
+        usedLetters={usedLetters}
+        disabled={isLevelComplete || isGameOver}
+      />
+
+      {isLevelComplete && (
+        <LevelComplete level={level} />
+      )}
+
+      {isGameOver && (
+        <GameOver
+          revealedWord={revealedWord}
+          onRetryLevel={handleRetryLevel}
+          onRestartGame={handleRestartGame}
+          isGameWon={isGameWon}
+          onShareResults={shareResults}
+        />
+      )}
+    </div>
+  );
+};
