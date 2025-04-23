@@ -7,10 +7,9 @@ interface GameOverProps {
   onRetryLevel: () => void;
   onRestartGame: () => void;
   isGameWon: boolean;
-  onShareResults: () => void;
 }
 
-export const GameOver = ({ revealedWord, onRetryLevel, onRestartGame, isGameWon, onShareResults }: GameOverProps) => {
+export const GameOver = ({ revealedWord, onRetryLevel, onRestartGame, isGameWon }: GameOverProps) => {
   return (
     <div className="game-over-overlay">
       <h2>{isGameWon ? 'You Won The Game!' : 'Game Over'}</h2>
@@ -18,11 +17,6 @@ export const GameOver = ({ revealedWord, onRetryLevel, onRestartGame, isGameWon,
       <div className="flex gap-2">
         <Button variant="outline" onClick={onRetryLevel}>Retry Level</Button>
         <Button variant="outline" onClick={onRestartGame}>Restart Game</Button>
-        {navigator.share && (
-          <Button onClick={onShareResults}>
-            Share Results
-          </Button>
-        )}
       </div>
     </div>
   );

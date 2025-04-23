@@ -8,7 +8,6 @@ import { GameOver } from './GameOver';
 import { WORDS } from '@/lib/words';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { useDisclosure } from '@radix-ui/react-accordion';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 const MAX_GUESSES = 6;
@@ -163,52 +162,6 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
     setHintUsed(false);
   };
 
-  const shareResults = () => {
-    const resultsText = `I beat Level ${level + 1} of Star Wordle in ${guesses.length} tries!\n`;
-    const shareData = {
-      text: resultsText,
-    };
-  
-    if (navigator.share) {
-      navigator.share(shareData)
-        .then(() => console.log('Shared successfully'))
-        .catch((error) => {
-          console.error('Error sharing:', error);
-          // Fallback to copy to clipboard
-          navigator.clipboard.writeText(resultsText)
-            .then(() => {
-              toast({
-                title: "Results copied to clipboard",
-                description: "Share the results by pasting them wherever you like!",
-              });
-            })
-            .catch(err => {
-              toast({
-                title: "Error",
-                description: "Failed to copy results to clipboard.",
-                variant: "destructive",
-              });
-            });
-        });
-    } else {
-      // Fallback to copy to clipboard if navigator.share is not supported
-      navigator.clipboard.writeText(resultsText)
-        .then(() => {
-          toast({
-            title: "Results copied to clipboard",
-            description: "Share the results by pasting them wherever you like!",
-          });
-        })
-        .catch(err => {
-          toast({
-            title: "Error",
-            description: "Failed to copy results to clipboard.",
-            variant: "destructive",
-          });
-        });
-    }
-  };
-
   const handleUseHint = () => {
     setHintUsed(true);
     setOpen(false);
@@ -247,11 +200,6 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
             </div>
           </DialogContent>
         </Dialog>
-        {navigator.share && (
-          <Button onClick={shareResults}>
-            Share Results
-          </Button>
-        )}
       </div>
       <Keyboard
         handleLetter={handleLetter}
@@ -262,7 +210,7 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
       />
 
       {isLevelComplete && (
-        <LevelComplete level={level} />
+        <LevelComplete level={level} guesses={guesses} />
       )}
 
       {isGameOver && (
@@ -271,7 +219,6 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
           onRetryLevel={handleRetryLevel}
           onRestartGame={handleRestartGame}
           isGameWon={isGameWon}
-          onShareResults={shareResults}
         />
       )}
     </div>
