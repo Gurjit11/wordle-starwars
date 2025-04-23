@@ -32,6 +32,7 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
   const [open, setOpen] = useState(false);
   const [showAnswerButton, setShowAnswerButton] = useState(false);
   const [viewAnswerUsed, setViewAnswerUsed] = useState(false);
+  const [levelCompleteOpen, setLevelCompleteOpen] = useState(false); // New state for level complete modal
 
   useEffect(() => {
     // Log the answer to the console
@@ -108,9 +109,10 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
 
     if (currentGuess === targetWord) {
       setIsLevelComplete(true);
+      setLevelCompleteOpen(true); // Open the level complete modal
       toast({
         title: "Level Complete!",
-        description: "Advancing to the next level...",
+        description: "Share your results or move to the next level.",
       });
     } else if (guesses.length + 1 >= MAX_GUESSES) {
       setIsGameOver(true);
@@ -138,28 +140,22 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentGuess, isLevelComplete, isGameOver, handleGuess, handleDelete, handleLetter]);
 
-  useEffect(() => {
-    if (isLevelComplete) {
-      const timer = setTimeout(() => {
-        if (level < WORDS.length - 1) {
-          setLevel(prevLevel => prevLevel + 1);
-          setGuesses([]);
-          setCurrentGuess('');
-          setIsLevelComplete(false);
-          setUsedLetters({});
-          setHintsUsed(0);
-          setShowAnswerButton(false);
-          setViewAnswerUsed(false);
-        } else {
-          setIsGameWon(true);
-          setIsGameOver(true);
-        }
-      }, 2000);
-      return () => clearTimeout(timer);
+  const handleNextLevel = () => {
+    if (level < WORDS.length - 1) {
+      setLevel(prevLevel => prevLevel + 1);
+      setGuesses([]);
+      setCurrentGuess('');
+      setIsLevelComplete(false);
+      setUsedLetters({});
+      setHintsUsed(0);
+      setShowAnswerButton(false);
+      setViewAnswerUsed(false);
+      setLevelCompleteOpen(false); // Close the level complete modal
+    } else {
+      setIsGameWon(true);
+      setIsGameOver(true);
     }
-  }, [isLevelComplete, level]);
-
-  
+  };
 
   const handleRetryLevel = () => {
     setGuesses([]);
@@ -245,9 +241,21 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
         disabled={isLevelComplete || isGameOver}
       />
 
-      {isLevelComplete && (
-        <LevelComplete level={level} guesses={guesses} />
-      )}
+      {/* Level Complete Modal */}
+      <Dialog open={levelCompleteOpen} onOpenChange={setLevelCompleteOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Level Complete!</DialogTitle>
+            <DialogDescription>
+              Congratulations, you completed level {level + 1}.
+            </DialogDescription>
+          </DialogHeader>
+          <LevelComplete level={level} guesses={guesses} />
+          <div className="flex justify-end space-x-2">
+            <Button onClick={handleNextLevel}>Next Level</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {isGameOver && (
         <GameOver

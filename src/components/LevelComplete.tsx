@@ -61,9 +61,6 @@ export const LevelComplete = ({ level, guesses }: LevelCompleteProps) => {
 
   return (
     <div className="level-complete-overlay">
-      <h2>Level Complete!</h2>
-      <p>Congratulations, you completed level {level + 1}.</p>
-      <p>Advancing to the next level...</p>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button onClick={() => setOpen(true)}>Share Results</Button>
