@@ -27,20 +27,37 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
   const [usedLetters, setUsedLetters] = useState<{[key: string]: string}>({});
   const targetWord = WORDS[level];
   const { toast } = useToast();
+  const [hintsUsed, setHintsUsed] = useState(0);
   const [hint, setHint] = useState<string | null>(null);
-  const [hintUsed, setHintUsed] = useState(false);
   const [open, setOpen] = useState(false);
+  const [showAnswerButton, setShowAnswerButton] = useState(false);
+  const [viewAnswerUsed, setViewAnswerUsed] = useState(false);
+
+  useEffect(() => {
+    // Log the answer to the console
+    console.log(`The answer for level ${level + 1} is: ${targetWord}`);
+  }, [level, targetWord]);
 
   useEffect(() => {
     // Generate a hint for the current level
     const generateHint = () => {
-      // Simple hint: the first letter of the word
-      setHint(WORDS[level].charAt(0));
+      if (hintsUsed < 3) {
+        // Provide a letter from the target word that hasn't been guessed yet
+        const unguessedLetters = targetWord.split('').filter(letter => !usedLetters[letter]);
+        if (unguessedLetters.length > 0) {
+          const randomIndex = Math.floor(Math.random() * unguessedLetters.length);
+          setHint(unguessedLetters[randomIndex]);
+        } else {
+          setHint(targetWord.charAt(Math.floor(Math.random() * targetWord.length)));
+        }
+      } else {
+        setHint(null);
+        setShowAnswerButton(true);
+      }
     };
 
     generateHint();
-    setHintUsed(false);
-  }, [level]);
+  }, [level, hintsUsed, usedLetters, targetWord]);
 
   const handleLetter = useCallback((letter: string) => {
     if (currentGuess.length < targetWord.length) {
@@ -130,6 +147,9 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
           setCurrentGuess('');
           setIsLevelComplete(false);
           setUsedLetters({});
+          setHintsUsed(0);
+          setShowAnswerButton(false);
+          setViewAnswerUsed(false);
         } else {
           setIsGameWon(true);
           setIsGameOver(true);
@@ -147,7 +167,9 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
     setIsGameOver(false);
     setRevealedWord('');
     setUsedLetters({});
-    setHintUsed(false);
+    setHintsUsed(0);
+    setShowAnswerButton(false);
+    setViewAnswerUsed(false);
   };
 
   const handleRestartGame = () => {
@@ -159,12 +181,20 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
     setIsLevelComplete(false);
     setRevealedWord('');
     setUsedLetters({});
-    setHintUsed(false);
+    setHintsUsed(0);
+    setShowAnswerButton(false);
+    setViewAnswerUsed(false);
   };
 
   const handleUseHint = () => {
-    setHintUsed(true);
+    setHintsUsed(prevHintsUsed => prevHintsUsed + 1);
     setOpen(false);
+  };
+
+  const handleViewAnswer = () => {
+    setIsGameOver(true);
+    setRevealedWord(targetWord);
+    setViewAnswerUsed(true);
   };
 
   return (
@@ -172,34 +202,40 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
       <p className="mb-2">Level: {level + 1}</p>
       <Grid guesses={guesses} currentGuess={currentGuess} targetWord={targetWord} />
       <div className="flex gap-4 mb-4">
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button variant="outline" disabled={hintUsed}>
-              Hint
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Are you sure?</DialogTitle>
-              <DialogDescription>
-                Using a hint will make the game easier. Are you sure you want to use a hint?
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="flex items-center justify-center">
-                {!hintUsed && hint ? `The first letter is: ${hint}` : "No hint available."}
+        {!showAnswerButton ? (
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" disabled={hintsUsed >= 3}>
+                Hint ({3 - hintsUsed} remaining)
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Are you sure?</DialogTitle>
+                <DialogDescription>
+                  Using a hint will make the game easier. Are you sure you want to use a hint?
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="flex items-center justify-center">
+                  {hint ? `The hint is: ${hint}` : "No hint available."}
+                </div>
               </div>
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button variant="secondary" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" onClick={handleUseHint}>
-                Use Hint
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+              <div className="flex justify-end space-x-2">
+                <Button variant="secondary" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" onClick={handleUseHint}>
+                  Use Hint
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        ) : (
+          <Button variant="destructive" onClick={handleViewAnswer} disabled={viewAnswerUsed}>
+            View Answer
+          </Button>
+        )}
       </div>
       <Keyboard
         handleLetter={handleLetter}
