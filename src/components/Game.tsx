@@ -169,9 +169,44 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
       text: resultsText,
     };
   
-    navigator.share(shareData)
-      .then(() => console.log('Shared successfully'))
-      .catch((error) => console.error('Error sharing:', error));
+    if (navigator.share) {
+      navigator.share(shareData)
+        .then(() => console.log('Shared successfully'))
+        .catch((error) => {
+          console.error('Error sharing:', error);
+          // Fallback to copy to clipboard
+          navigator.clipboard.writeText(resultsText)
+            .then(() => {
+              toast({
+                title: "Results copied to clipboard",
+                description: "Share the results by pasting them wherever you like!",
+              });
+            })
+            .catch(err => {
+              toast({
+                title: "Error",
+                description: "Failed to copy results to clipboard.",
+                variant: "destructive",
+              });
+            });
+        });
+    } else {
+      // Fallback to copy to clipboard if navigator.share is not supported
+      navigator.clipboard.writeText(resultsText)
+        .then(() => {
+          toast({
+            title: "Results copied to clipboard",
+            description: "Share the results by pasting them wherever you like!",
+          });
+        })
+        .catch(err => {
+          toast({
+            title: "Error",
+            description: "Failed to copy results to clipboard.",
+            variant: "destructive",
+          });
+        });
+    }
   };
 
   const handleUseHint = () => {
