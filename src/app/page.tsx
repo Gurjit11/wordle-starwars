@@ -21,7 +21,7 @@ const Home = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-star-wars-black text-star-wars-yellow">
+    <div className="flex z-10 flex-col items-center justify-center min-h-screen py-2 bg-star-wars-black text-star-wars-yellow">
       {!gameStarted ? (
         <div className="fade-in">
           <h1 className="text-4xl font-bold mb-4 star-wars-text">Star Wordle</h1>

@@ -29,7 +29,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <section className='section'>
+            <span className='span'></span>
+            <span className='span'></span>
+            <span className='span'></span>
+            <span className='span'></span>
+            <span className='span'></span>
+            <span className='span'></span>
+            <span className='span'></span>
+            <span className='span'></span>
+            <span className='span'></span>
+            <span className='span'></span>
+        </section>
+        <div className='z-10'>
         {children}
+        </div>
         <Styles/>
       </body>
     </html>
