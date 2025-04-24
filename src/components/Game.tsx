@@ -12,11 +12,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Howl } from 'howler';
 
 // Sound effects
-import blasterSound from '../../public/sounds/blaster.mp3';
-import correctSound from '../../public/sounds/correct.mp3';
-import failSound from '../../public/sounds/fail.mp3';
-import levelCompleteSound from '../../public/sounds/level_complete.mp3';
-import gameWinSound from '../../public/sounds/game_win.mp3';
+import blasterSound from './sounds/blaster.mp3';
+import correctSound from './sounds/correct.mp3';
+import failSound from './sounds/fail.mp3';
+import levelCompleteSound from './sounds/level_complete.mp3';
+import gameWinSound from './sounds/level_complete.mp3';
 
 const MAX_GUESSES = 6;
 
