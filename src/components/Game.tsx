@@ -40,6 +40,7 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
   const correct = new Howl({ src: ['/sounds/correct.mp3'] });
   const fail = new Howl({ src: ['/sounds/fail.mp3'] });
   const levelComplete = new Howl({ src: ['/sounds/level_complete.mp3'] });
+  const saber = new Howl({src: ['/sounds/saber.mp3']});
   const gameWin = new Howl({src: ['/sounds/game_win.mp3']});
 
   useEffect(() => {
@@ -71,14 +72,14 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
   const handleLetter = useCallback((letter: string) => {
     if (currentGuess.length < targetWord.length) {
       setCurrentGuess(prevGuess => prevGuess + letter);
-      blaster.play(); // Play blaster sound on letter input
+      saber.play(); // Play saber sound on letter input 
     }
-  }, [currentGuess, targetWord, blaster]);
+  }, [currentGuess, targetWord, saber]);
 
   const handleDelete = useCallback(() => {
     setCurrentGuess(prevGuess => prevGuess.slice(0, -1));
-    blaster.play(); // Play blaster sound on delete
-  }, [blaster]);
+    saber.play()// Play saber sound on delete
+  }, [saber]);
 
   const handleGuess = useCallback(() => {
     if (currentGuess.length !== targetWord.length) {
@@ -105,7 +106,7 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
         if (targetWord[i] === letter) {
             newUsedLetters[letter] = "green";
             correct.play(); //Play correct sound
-
+            
         } else if (
             targetWord.includes(letter) &&
             newUsedLetters[letter] !== "green"
@@ -124,6 +125,7 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
       setLevelCompleteOpen(true); // Open the level complete modal
       levelComplete.play(); // Play level complete sound
       toast({
+        
         title: "Level Complete!",
         description: "Share your results or move to the next level.",
       });
@@ -134,7 +136,7 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
     }
 
     setCurrentGuess('');
-  }, [currentGuess, guesses, targetWord, guesses.length, usedLetters, toast, blaster, correct, fail, levelComplete]);
+  }, [currentGuess, guesses, targetWord, guesses.length, usedLetters, toast, correct, fail, levelComplete,saber]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -169,6 +171,7 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
       setIsGameWon(true);
       setIsGameOver(true);
       gameWin.play();
+      
     }
   };
 
