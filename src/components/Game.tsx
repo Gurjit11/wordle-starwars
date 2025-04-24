@@ -11,13 +11,6 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Howl } from 'howler';
 
-// Sound effects
-import blasterSound from './sounds/blaster.mp3';
-import correctSound from './sounds/correct.mp3';
-import failSound from './sounds/fail.mp3';
-import levelCompleteSound from './sounds/level_complete.mp3';
-import gameWinSound from './sounds/level_complete.mp3';
-
 const MAX_GUESSES = 6;
 
 interface GameProps {
@@ -42,12 +35,12 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
   const [viewAnswerUsed, setViewAnswerUsed] = useState(false);
   const [levelCompleteOpen, setLevelCompleteOpen] = useState(false); // New state for level complete modal
 
-  // Sound effect instances
-  const blaster = new Howl({ src: [blasterSound] });
-  const correct = new Howl({ src: [correctSound] });
-  const fail = new Howl({ src: [failSound] });
-  const levelComplete = new Howl({ src: [levelCompleteSound] });
-  const gameWin = new Howl({src: [gameWinSound]});
+  // Sound effects
+  const blaster = new Howl({ src: ['/sounds/blaster.mp3'] });
+  const correct = new Howl({ src: ['/sounds/correct.mp3'] });
+  const fail = new Howl({ src: ['/sounds/fail.mp3'] });
+  const levelComplete = new Howl({ src: ['/sounds/level_complete.mp3'] });
+  const gameWin = new Howl({src: ['/sounds/game_win.mp3']});
 
   useEffect(() => {
     // Log the answer to the console
@@ -292,4 +285,3 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
     </div>
   );
 };
-
