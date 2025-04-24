@@ -1,4 +1,5 @@
 'use client';
+import { ai } from '@/ai/ai-instance';
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Grid } from './Grid';
@@ -6,7 +7,7 @@ import { Keyboard } from './Keyboard';
 import { LevelComplete } from './LevelComplete';
 import { GameOver } from './GameOver';
 import { WORDS } from '@/lib/words';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';;
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Howl } from 'howler';
@@ -26,7 +27,7 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
   const [isGameWon, setIsGameWon] = useState(false);
   const [revealedWord, setRevealedWord] = useState('');
   const [usedLetters, setUsedLetters] = useState<{[key: string]: string}>({});
-  const targetWord = WORDS[level];
+  const targetWord = WORDS[level].toUpperCase();
   const { toast } = useToast();
   const [hintsUsed, setHintsUsed] = useState(0);
   const [hint, setHint] = useState<string | null>(null);
@@ -50,19 +51,18 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
 
   useEffect(() => {
     // Generate a hint for the current level
-    const generateHint = () => {
-      if (hintsUsed < 3) {
-        // Provide a letter from the target word that hasn't been guessed yet
-        const unguessedLetters = targetWord.split('').filter(letter => !usedLetters[letter]);
-        if (unguessedLetters.length > 0) {
-          const randomIndex = Math.floor(Math.random() * unguessedLetters.length);
-          setHint(unguessedLetters[randomIndex]);
-        } else {
-          setHint(targetWord.charAt(Math.floor(Math.random() * targetWord.length)));
-        }
-      } else {
+    const generateHint = async () => {
+        if (hintsUsed >= 3) {
         setHint(null);
         setShowAnswerButton(true);
+        return
+        }
+        if (level >= WORDS.length) return
+
+        const response = await ai.generate('give a hint for the word '+ targetWord + '. The hint can be a definition, synonym, rhyme or first letter.');
+        const hintText = response.text;
+        if(hintText){
+            setHint(hintText);
       }
     };
 
@@ -234,7 +234,7 @@ export const Game: React.FC<GameProps> = ({ initialLevel = 0 }) => {
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="flex items-center justify-center">
-                  {hint ? `The hint is: ${hint}` : "No hint available."}
+                  {hint ? hint : "No hint available."}
                 </div>
               </div>
               <div className="flex justify-end space-x-2">
